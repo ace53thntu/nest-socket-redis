@@ -3,57 +3,63 @@ version: "3.9"
 
 # The containers that compose the project
 services:
-  app3000:
-    container_name: nest-socket-redis-be
-    build:
-      context: .
-      args:
-        ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
-        HTTP_PORT: 3000
-    restart: always
-    ports:
-      - 3000:3000
-    networks:
-      - socket-network
-
-  app3001:
+  app1:
     container_name: nest-socket-redis-be-1
     build:
       context: .
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
+        APP_NAME: "App 001"
     restart: always
-    ports:
-      - 3001:3000
+    # ports:
+    #   - 3003:3000
     networks:
       - socket-network
+    depends_on:
+      - redis
 
-  app3002:
+  app2:
     container_name: nest-socket-redis-be-2
     build:
       context: .
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
+        APP_NAME: "App 002"
     restart: always
-    ports:
-      - 3002:3000
     networks:
       - socket-network
+    depends_on:
+      - redis
 
-  app3003:
-    container_name: nest-socket-redis-be-2
+  app3:
+    container_name: nest-socket-redis-be-3
     build:
       context: .
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
+        APP_NAME: "App 003"
     restart: always
-    ports:
-      - 3003:3000
     networks:
       - socket-network
+    depends_on:
+      - redis
+
+  app4:
+    container_name: nest-socket-redis-be-4
+    build:
+      context: .
+      args:
+        ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+        HTTP_PORT: 3000
+        APP_NAME: "App 004"
+    restart: always
+    networks:
+      - socket-network
+    depends_on:
+      - redis
 
   redis:
     image: redis:7.2.1-alpine
@@ -62,7 +68,7 @@ services:
     command: redis-server
     volumes:
       - redis-data:/data
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - socket-network
     ports:
@@ -72,6 +78,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  haproxy:
+    build: ./haproxy
+    links:
+      - app1
+      - app2
+      - app3
+      - app4
+    ports:
+      - "3030:80"
+    networks:
+      - socket-network
+
+  # nginx:
+  #   build: ./nginx
+  #   ports:
+  #     - '3030:80'
+  #   depends_on:
+  #     - app1
+  #     - app2
+  #     - app3
+  #     - app4
+  #   networks:
+  #     - socket-network
 
   # postgres:
   #   image: postgres:14.7

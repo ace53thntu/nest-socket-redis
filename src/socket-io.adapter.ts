@@ -18,7 +18,7 @@ export class SocketIOAdapter extends IoAdapter {
 
   async connectToRedis(): Promise<void> {
     const pubClient = createClient({
-      url: 'redis://localhost:6379',
+      url: 'redis://redis:6379',
     });
     const subClient = pubClient.duplicate();
 

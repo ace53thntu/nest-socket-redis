@@ -1,0 +1,18 @@
+config:
+  target: "http://localhost:3030/chat"
+  phases:
+    - duration: 30
+      arrivalRate: 10
+      # rampTo: 30
+      name: Test socket ne
+  socketio:
+    transports: ["websocket"]
+
+scenarios:
+  - name: "Connect and send a bunch of messages"
+    engine: socketio
+    flow:
+      - think: 1
+      - emit:
+          channel: "identity"
+          data: "Hello from Test"

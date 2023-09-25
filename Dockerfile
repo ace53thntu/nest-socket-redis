@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml* ./
-RUN yarn global add pnpm && pnpm i --frozen-lockfile
+RUN yarn global add pnpm && pnpm i --frozen-lockfile --filter=!artillery
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -40,22 +40,8 @@ ARG ENVIRONMENT_NAME
 ENV ENVIRONMENT_NAME=${ENVIRONMENT_NAME}
 ARG HTTP_PORT
 ENV HTTP_PORT=${HTTP_PORT}
-# ARG DB_HOST
-# ENV DB_HOST=${DB_HOST}
-# ARG DB_USERNAME
-# ENV DB_USERNAME=${DB_USERNAME}
-# ARG DB_PASSWORD
-# ENV DB_PASSWORD=${DB_PASSWORD}
-# ARG DB_DATABASE
-# ENV DB_DATABASE=${DB_DATABASE}
-# ARG DB_SCHEMA
-# ENV DB_SCHEMA=${DB_SCHEMA}
-# ARG JWT_SECRET
-# ENV JWT_SECRET=${JWT_SECRET}
-# ARG JWT_EXPIRES_IN
-# ENV JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-# ARG ENABLE_DOCUMENTATION
-# ENV ENABLE_DOCUMENTATION=${ENABLE_DOCUMENTATION}
+ARG APP_NAME
+ENV APP_NAME=${APP_NAME}
 
 # For migration and seeding
 COPY --from=builder /app/package.json ./package.json

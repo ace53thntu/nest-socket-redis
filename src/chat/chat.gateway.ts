@@ -30,7 +30,9 @@ export class ChatGateway
   }
 
   handleConnection(client: Socket) {
-    this.logger.log(`🔗 Client connected`);
+    this.logger.log(
+      `🔗 Client connected with transport ${client.conn.transport.name}`,
+    );
 
     return this.server.emit('onlineUsers', 10);
   }
@@ -41,11 +43,12 @@ export class ChatGateway
 
   private disconnect(client: Socket) {
     client.disconnect();
+    this.logger.log(`🔗 Client disconnected`);
   }
 
   @SubscribeMessage('identity')
-  async identity(@MessageBody() data: number): Promise<number> {
+  async identity(@MessageBody() data: any): Promise<any> {
     this.logger.log(`💬 Websocket Gateway identity: ${JSON.stringify(data)}`);
-    return data;
+    return this.server.emit('identityRes', data);
   }
 }
