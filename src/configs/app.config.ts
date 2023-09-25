@@ -10,5 +10,6 @@ export default registerAs(
         ? Number.parseInt(process.env.HTTP_PORT)
         : 3000,
     },
+    appName: process.env.APP_NAME,
   }),
 );
