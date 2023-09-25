@@ -1,18 +1,23 @@
 config:
   target: "http://localhost:3030/chat"
   phases:
-    - duration: 30
-      arrivalRate: 10
-      # rampTo: 30
-      name: Test socket ne
+    - duration: 60
+      arrivalCount: 200
   socketio:
     transports: ["websocket"]
+  processor: "./functions.js"
 
 scenarios:
   - name: "Connect and send a bunch of messages"
     engine: socketio
     flow:
+      # wait for the WebSocket upgrade (optional)
       - think: 1
-      - emit:
-          channel: "identity"
-          data: "Hello from Test"
+
+      - loop:
+        - function: "setUser"
+        - emit:
+            channel: "anonymous user"
+            data: {"username": "{{ username }}"}
+        - think: 90
+        count: 1

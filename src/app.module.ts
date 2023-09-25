@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import configs from './configs';
 import { ChatModule } from './chat/chat.module';
 import { HealthModule } from './health/health.module';
+import { NestCacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { HealthModule } from './health/health.module';
       isGlobal: true,
     }),
     HealthModule,
+    NestCacheModule,
     ChatModule,
   ],
   controllers: [AppController],
