@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import {
+  ConnectedSocket,
   GatewayMetadata,
   MessageBody,
   OnGatewayConnection,
@@ -10,6 +11,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
+import { CacheService } from '../cache/cache.service';
 
 @WebSocketGateway<GatewayMetadata>({
   namespace: 'chat',
@@ -25,30 +27,52 @@ export class ChatGateway
 
   private readonly logger = new Logger(ChatGateway.name);
 
+  constructor(private readonly cacheService: CacheService) {}
+
   afterInit() {
     this.logger.log(`💬 Websocket Gateway initialized ${this.server.name}`);
   }
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     this.logger.log(
-      `🔗 Client connected with transport ${client.conn.transport.name}`,
+      `🔗 Client connected with transport ${client.conn.transport.name} and ID: ${client.id}`,
     );
 
-    return this.server.emit('onlineUsers', 10);
+    const users = await this.cacheService.list();
+
+    // Tell the socket how many users are present.
+    return this.server
+      .to(client.id)
+      .emit('presence', { numUsers: users.length });
   }
 
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
+    this.cacheService.remove(client.id);
+    const users = await this.cacheService.list();
+    this.server.emit('user left', {
+      numUsers: users.length,
+    });
     this.disconnect(client);
   }
 
   private disconnect(client: Socket) {
     client.disconnect();
-    this.logger.log(`🔗 Client disconnected`);
+    this.logger.log(`🔗 Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('identity')
-  async identity(@MessageBody() data: any): Promise<any> {
+  @SubscribeMessage('anonymous user')
+  async anonymousUser(
+    @MessageBody() data: { username: string },
+    @ConnectedSocket() _client: Socket,
+  ): Promise<any> {
     this.logger.log(`💬 Websocket Gateway identity: ${JSON.stringify(data)}`);
-    return this.server.emit('identityRes', data);
+    this.cacheService.upsert(_client.id, {
+      username: data.username,
+    });
+    const users = await this.cacheService.list();
+    return this.server.emit('user joined', {
+      username: data.username,
+      numUsers: users.length,
+    });
   }
 }
