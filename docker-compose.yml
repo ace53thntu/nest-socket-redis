@@ -10,16 +10,11 @@ services:
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
-        # DB_HOST: ${DB_HOST}
-        # DB_USERNAME: ${DB_USERNAME}
-        # DB_PASSWORD: ${DB_PASSWORD}
-        # DB_DATABASE: ${DB_DATABASE}
-        # JWT_SECRET: ${JWT_SECRET}
-        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
     restart: always
     ports:
       - 3000:3000
+    networks:
+      - socket-network
 
   app3001:
     container_name: nest-socket-redis-be-1
@@ -28,16 +23,11 @@ services:
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
-        # DB_HOST: ${DB_HOST}
-        # DB_USERNAME: ${DB_USERNAME}
-        # DB_PASSWORD: ${DB_PASSWORD}
-        # DB_DATABASE: ${DB_DATABASE}
-        # JWT_SECRET: ${JWT_SECRET}
-        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
     restart: always
     ports:
       - 3001:3000
+    networks:
+      - socket-network
 
   app3002:
     container_name: nest-socket-redis-be-2
@@ -46,16 +36,11 @@ services:
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
-        # DB_HOST: ${DB_HOST}
-        # DB_USERNAME: ${DB_USERNAME}
-        # DB_PASSWORD: ${DB_PASSWORD}
-        # DB_DATABASE: ${DB_DATABASE}
-        # JWT_SECRET: ${JWT_SECRET}
-        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
     restart: always
     ports:
       - 3002:3000
+    networks:
+      - socket-network
 
   app3003:
     container_name: nest-socket-redis-be-2
@@ -64,16 +49,29 @@ services:
       args:
         ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
         HTTP_PORT: 3000
-        # DB_HOST: ${DB_HOST}
-        # DB_USERNAME: ${DB_USERNAME}
-        # DB_PASSWORD: ${DB_PASSWORD}
-        # DB_DATABASE: ${DB_DATABASE}
-        # JWT_SECRET: ${JWT_SECRET}
-        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
     restart: always
     ports:
       - 3003:3000
+    networks:
+      - socket-network
+
+  redis:
+    image: redis:7.2.1-alpine
+    container_name: redis
+    restart: unless-stopped
+    command: redis-server
+    volumes:
+      - redis-data:/data
+      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - socket-network
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # postgres:
   #   image: postgres:14.7
@@ -92,5 +90,9 @@ services:
   #   env_file:
   #     - .env
 
-# volumes:
-#   odidi-db-data:
+networks:
+  socket-network:
+    driver: bridge
+    name: socket-network
+volumes:
+  redis-data:
