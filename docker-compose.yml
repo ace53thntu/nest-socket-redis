@@ -91,18 +91,6 @@ services:
     networks:
       - socket-network
 
-  # nginx:
-  #   build: ./nginx
-  #   ports:
-  #     - '3030:80'
-  #   depends_on:
-  #     - app1
-  #     - app2
-  #     - app3
-  #     - app4
-  #   networks:
-  #     - socket-network
-
   # postgres:
   #   image: postgres:14.7
   #   # restart: always
