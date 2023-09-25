@@ -1,0 +1,96 @@
+# Set the version of docker compose to use
+version: "3.9"
+
+# The containers that compose the project
+services:
+  app3000:
+    container_name: nest-socket-redis-be
+    build:
+      context: .
+      args:
+        ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+        HTTP_PORT: 3000
+        # DB_HOST: ${DB_HOST}
+        # DB_USERNAME: ${DB_USERNAME}
+        # DB_PASSWORD: ${DB_PASSWORD}
+        # DB_DATABASE: ${DB_DATABASE}
+        # JWT_SECRET: ${JWT_SECRET}
+        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
+    restart: always
+    ports:
+      - 3000:3000
+
+  app3001:
+    container_name: nest-socket-redis-be-1
+    build:
+      context: .
+      args:
+        ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+        HTTP_PORT: 3000
+        # DB_HOST: ${DB_HOST}
+        # DB_USERNAME: ${DB_USERNAME}
+        # DB_PASSWORD: ${DB_PASSWORD}
+        # DB_DATABASE: ${DB_DATABASE}
+        # JWT_SECRET: ${JWT_SECRET}
+        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
+    restart: always
+    ports:
+      - 3001:3000
+
+  app3002:
+    container_name: nest-socket-redis-be-2
+    build:
+      context: .
+      args:
+        ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+        HTTP_PORT: 3000
+        # DB_HOST: ${DB_HOST}
+        # DB_USERNAME: ${DB_USERNAME}
+        # DB_PASSWORD: ${DB_PASSWORD}
+        # DB_DATABASE: ${DB_DATABASE}
+        # JWT_SECRET: ${JWT_SECRET}
+        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
+    restart: always
+    ports:
+      - 3002:3000
+
+  app3003:
+    container_name: nest-socket-redis-be-2
+    build:
+      context: .
+      args:
+        ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+        HTTP_PORT: 3000
+        # DB_HOST: ${DB_HOST}
+        # DB_USERNAME: ${DB_USERNAME}
+        # DB_PASSWORD: ${DB_PASSWORD}
+        # DB_DATABASE: ${DB_DATABASE}
+        # JWT_SECRET: ${JWT_SECRET}
+        # JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+        # ENABLE_DOCUMENTATION: ${ENABLE_DOCUMENTATION}
+    restart: always
+    ports:
+      - 3003:3000
+
+  # postgres:
+  #   image: postgres:14.7
+  #   # restart: always
+  #   container_name: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_DB: ${DB_DATABASE}
+  #     POSTGRES_USER: ${DB_USERNAME}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     TZ: "GMT"
+  #     PGTZ: "GMT"
+  #   volumes:
+  #     - odidi-db-data:/data/postgres
+  #   env_file:
+  #     - .env
+
+# volumes:
+#   odidi-db-data:
